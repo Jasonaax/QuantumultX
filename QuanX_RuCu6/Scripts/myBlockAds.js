@@ -1,4 +1,4 @@
-// 2024-02-18 19:20
+// 2024-10-15 10:05
 
 const url = $request.url;
 const isResp = typeof $response !== "undefined";
@@ -167,27 +167,13 @@ switch (isResp) {
   case /^https:\/\/api\.m\.mi\.com\/v1\/app\/start/.test(url):
     try {
       let obj = JSON.parse(body);
+      delete obj.data.splash;
       if (obj?.data?.skip_splash) {
         obj.data.skip_splash = true;
-      }
-      if (obj?.data?.splash) {
-        delete obj.data.splash;
       }
       body = JSON.stringify(obj);
     } catch (err) {
       console.log(`小米商城-开屏广告, 出现异常: ` + err);
-    }
-    break;
-  // 小米商城-物流页推广
-  case /^https:\/\/api\.m\.mi\.com\/v1\/order\/expressView/.test(url):
-    try {
-      let obj = JSON.parse(body);
-      if (obj?.data?.bottom?.ad_info) {
-        delete obj.data.bottom.ad_info;
-      }
-      body = JSON.stringify(obj);
-    } catch (err) {
-      console.log(`小米商城-物流页推广, 出现异常: ` + err);
     }
     break;
   // JavDB
@@ -206,6 +192,7 @@ switch (isResp) {
         }
       } else if (url.includes("/api/v1/startup")) {
         // 开屏广告
+        delete obj.data.settings.NOTICE; // 首次进入的提示
         if (obj?.data?.splash_ad) {
           obj.data.splash_ad.enabled = false;
           obj.data.splash_ad.overtime = 0;
@@ -213,18 +200,15 @@ switch (isResp) {
         if (obj?.data?.feedback) {
           obj.data.feedback = {};
         }
-        if (obj?.data?.settings?.NOTICE) {
-          delete obj.data.settings.NOTICE;
-        }
         if (obj?.data?.user) {
-          obj.data.user.vip_expired_at = "2090-12-31T23:59:59.000+08:00";
-          obj.data.user.is_vip = true;
+          // obj.data.user.vip_expired_at = "2090-12-31T23:59:59.000+08:00";
+          // obj.data.user.is_vip = true;
         }
       } else if (url.includes("/api/v1/users")) {
         // 伪装会员
         if (obj?.data?.user) {
-          obj.data.user.vip_expired_at = "2090-12-31T23:59:59.000+08:00";
-          obj.data.user.is_vip = true;
+          // obj.data.user.vip_expired_at = "2090-12-31T23:59:59.000+08:00";
+          // obj.data.user.is_vip = true;
         }
       } else if (url.includes("/api/v4/movies/")) {
         // 详情页banner
@@ -237,14 +221,6 @@ switch (isResp) {
       body = JSON.stringify(obj);
     } catch (err) {
       console.log(`JavDB, 出现异常: ` + err);
-    }
-    break;
-  // MISSAV-播放弹窗
-  case /^https:\/\/missav\.com\/(dm\d+\/)?\w{2}\/[\w-]+/.test(url):
-    try {
-      body = body.replace(/if\x20?\(nextDirectUrl\)/g, "if (rucu6)").replace(/htmlAdIndexes\.push/g, "// htmlAdIndexes.push");
-    } catch (err) {
-      console.log(`MISSAV-播放弹窗, 出现异常: ` + err);
     }
     break;
   default:

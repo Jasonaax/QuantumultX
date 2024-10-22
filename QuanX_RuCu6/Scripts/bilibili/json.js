@@ -1,8 +1,8 @@
-// 2024-10-19 12:35  
+// 2024-10-19 12:35
 
 const url = $request.url;
 if (!$response.body) $done({});
-let obj = JSON.parse($response.body);  
+let obj = JSON.parse($response.body);
 
 if (url.includes("/x/resource/show/tab/v2")) {
   // 底部选项卡
@@ -205,7 +205,6 @@ if (url.includes("/x/resource/show/tab/v2")) {
   if (obj?.data?.new_tab_info?.outer_list?.length > 0) {
     obj.data.new_tab_info.outer_list = obj.data.new_tab_info.outer_list.filter((i) => i?.biz_id !== 33);
   }
-}  
+}
 
 $done({ body: JSON.stringify(obj) });
-  
